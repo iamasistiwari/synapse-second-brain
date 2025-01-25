@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .border-custom {
+    @apply border-neutral-300 dark:border-neutral-700;
+  }
+  .text-custom {
+    @apply text-violet-600 dark:text-violet-400;
+  }
+}
+
 body {
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -18,8 +27,8 @@ body {
 }
 
 .scrollbar-w-2::-webkit-scrollbar {
-  width: 0.25rem;
-  height: 0.25rem;
+  width: 0.15rem;
+  height: 0.15rem;
 }
 .scrollbar-track-blue-lighter::-webkit-scrollbar-track{
   --bg-opacity: 1;
@@ -33,4 +42,6 @@ body {
 }
 .scrollbar-thumb-rounded::-webkit-scrollbar-thumb {
   border-radius: 0.25rem;
-}
+} 
+
+
