@@ -1,5 +1,4 @@
 
-# dependencies
 /node_modules
 /.pnp
 .pnp.*
@@ -9,14 +8,7 @@
 !.yarn/releases
 !.yarn/versions
 .turbo/
-/turbo
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
+.dist/
 
 # production
 /build
