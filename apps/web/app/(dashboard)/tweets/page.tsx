@@ -1,9 +1,10 @@
-import React from 'react'
+import DashboardNav from '@/components/DashboardNav';
+import React from 'react';
 
-export default function page() {
+export default async function page() {
   return (
     <div>
-      tweets
+      <DashboardNav title="Tweets" />
     </div>
-  )
+  );
 }

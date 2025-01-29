@@ -1,9 +1,10 @@
+import DashboardNav from '@/components/DashboardNav';
 import React from 'react'
 
 export default async function page() {
   return (
-    <div>
-      dashboard
+    <div className=''>
+      <DashboardNav title='Documents' />
     </div>
-  )
+  );
 }

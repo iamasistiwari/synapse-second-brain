@@ -1,5 +1,5 @@
 import { ThemeToggle } from '@/components/theme-toggle';
-import Sidebar from '@/components/ui/sidebar';
+import Sidebar from '@/components/Sidebar';
 import React from 'react';
 
 export default async function layout({
@@ -9,7 +9,6 @@ export default async function layout({
 }) {
   return (
     <div className="flex min-h-screen w-full">
-      
       {/* leave this just temporay */}
       <div className="absolute left-52">
         <ThemeToggle />
@@ -19,7 +18,9 @@ export default async function layout({
       <Sidebar />
 
       {/* children */}
-      <aside className="container max-h-screen w-full">{children}</aside>
+      <aside className="container max-h-screen w-full px-10 py-8">
+        {children}
+      </aside>
     </div>
   );
 }
