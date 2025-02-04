@@ -1,22 +1,19 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import contentRouter from "./content";
-import metaRouter from "./metadata.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-
-
+import middleware from "./middleware";
 
 const app = express();
+const PORT = 3001;
+
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
-
+app.use(middleware);
 app.use("/api/v1/content", contentRouter);
-app.use("/api/v1/metadata", metaRouter);
 
-
-
-app.listen(3001, () => {
-  console.log("Server is listing on 3001");
+app.listen(PORT, () => {
+  console.log(`Server is running on ${PORT}`);
 });
