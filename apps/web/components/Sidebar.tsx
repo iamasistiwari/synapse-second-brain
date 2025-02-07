@@ -2,7 +2,6 @@
 import {
   Brain,
   Twitter,
-  Youtube,
   FileText,
   Link2,
   Tags,
@@ -32,14 +31,9 @@ const SiderBarOptions: SiderBarOptions[] = [
     href: '/tweets',
   },
   {
-    title: 'Videos',
-    icon: Youtube,
-    href: '/videos',
-  },
-  {
-    title: 'Documents',
+    title: 'Notes',
     icon: FileText,
-    href: '/documents',
+    href: '/note',
   },
   {
     title: 'Links',
@@ -57,7 +51,7 @@ export default function Sidebar() {
   const session = useSession();
   const pathname = usePathname();
   return (
-    <div className="border-custom min-w-[250px] border-r px-4">
+    <div className="border-custom min-w-[250px] border-r px-4 py-5">
       <div className="border-custom flex items-center space-x-2 border-b py-4">
         <Brain className="text-custom h-8 w-8" />
         <span className="text-xl font-semibold">Synapse</span>
@@ -76,7 +70,7 @@ export default function Sidebar() {
         ))}
       </div>
 
-      <div className="flex items-center px-4 pt-6 space-x-2">
+      <div className="flex items-center space-x-2 px-4 pt-6">
         <Image
           src={session.data?.user.image || 'https://github.com/shadcn.png'}
           alt="image"
@@ -84,12 +78,17 @@ export default function Sidebar() {
           height={35}
           className="rounded-3xl"
         />
-        <span className='text-sm opacity-80'>{session.data?.user.name}</span>
+        <span className="text-sm opacity-80">{session.data?.user.name}</span>
 
         {/* needs to change with button */}
-        <span className='hover:cursor-pointer active:scale-90 '>
-          <LogOut className="border-custom h-10 w-10 opacity-80 rounded-md border p-2" />
-        </span>
+        <button
+          onClick={() => {
+            alert('HI');
+          }}
+          className="hover:cursor-pointer active:scale-90"
+        >
+          <LogOut className="border-custom h-10 w-10 rounded-md border p-2 opacity-80" />
+        </button>
       </div>
     </div>
   );
