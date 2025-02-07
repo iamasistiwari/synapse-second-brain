@@ -1,10 +1,10 @@
-import { getLinks } from '@/actions/content';
+import { getNotes } from '@/actions/content';
 import ContentCard from '@/components/ContentCard';
 import DashboardNav from '@/components/DashboardNav';
 import React from 'react';
 
 export default async function page() {
-  const contents = await getLinks();
+  const contents = await getNotes();
   if (!contents) {
     return <div>bad</div>;
   }

@@ -1,4 +1,3 @@
-import { ThemeToggle } from '@/components/theme-toggle';
 import Sidebar from '@/components/Sidebar';
 import React from 'react';
 
@@ -9,10 +8,6 @@ export default async function layout({
 }) {
   return (
     <div className="flex min-h-screen w-full">
-      {/* leave this just temporay */}
-      <div className="absolute left-52">
-        <ThemeToggle />
-      </div>
 
       {/* sidebar */}
       <Sidebar />
