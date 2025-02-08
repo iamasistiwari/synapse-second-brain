@@ -11,6 +11,8 @@ app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
+console.log("HERE");
+
 app.use(middleware);
 app.use("/api/v1/content", contentRouter);
 

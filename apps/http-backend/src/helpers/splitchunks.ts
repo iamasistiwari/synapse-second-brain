@@ -1,6 +1,6 @@
 export default function splitChunks(
   text: string,
-  chunkSize: number = 100
+  chunkSize: number = 100,
 ): string[] {
   const words = text.split(" ");
   const chunks: string[] = [];

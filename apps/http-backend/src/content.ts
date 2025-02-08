@@ -2,6 +2,7 @@ import express, { Router, Request, Response } from "express";
 import {
   ContentType,
   noteValidator,
+  ReceivedContent,
   tweetLinkValidator,
 } from "@repo/common/type";
 import { zod } from "@repo/common/type";
@@ -10,6 +11,7 @@ import axios from "axios";
 import { GetHash } from "./helpers/validation";
 import fetchMeta from "./helpers/metadata";
 import splitChunks from "./helpers/splitchunks";
+import Keyv from "keyv";
 
 interface EmbeddingsResponse {
   embeddings: number[];
@@ -33,8 +35,9 @@ contentRouter.post("/add", async (req: Request, res: Response) => {
         });
         return;
       }
-
+      console.log("BEFORE META")
       const metadata = await fetchMeta(validation.data.url);
+
       if (!metadata) {
         res.status(400).json({
           message: "Something wrong with the url",
@@ -42,6 +45,7 @@ contentRouter.post("/add", async (req: Request, res: Response) => {
         });
         return;
       }
+      console.log("AFTER META", metadata)
       const userTitle = validation.data.title;
       const urlTitle = metadata.body.data.title;
       const urlDescription = metadata.body.data.description;
@@ -63,7 +67,6 @@ contentRouter.post("/add", async (req: Request, res: Response) => {
           ])
           .select("id")
           .single();
-        console.log("BEFRE CONTen", ContentError);
         if (ContentError) throw new Error("Error while uploading Content");
 
         const tagsToInsert = validation.data.tags.map((tag) => ({
@@ -91,7 +94,7 @@ contentRouter.post("/add", async (req: Request, res: Response) => {
             `https://embeddings-server.ashishtiwari.net?token=${token}`,
             {
               data,
-            }
+            },
           );
           const embeddings = embeddingsResponse.data as EmbeddingsResponse;
           const section = {
@@ -110,7 +113,7 @@ contentRouter.post("/add", async (req: Request, res: Response) => {
         }
         await supabase.rpc("commit_transaction");
         res.status(200).json({
-          message: "Successfull",
+          message: "Submitted",
           error: "",
         });
         return;
@@ -148,28 +151,25 @@ contentRouter.post("/add", async (req: Request, res: Response) => {
           ])
           .select("id")
           .single();
-        console.log("HERE 1", ContentError);
-        if (ContentError) throw new Error(ContentError.message);
+        if (ContentError) throw new Error("Error while uploading Content");
 
         const tagsToInsert = validation.data.tags.map((tag) => ({
           title: tag,
           contentId: Content?.id,
         }));
 
-        const { data: Tags, error: TagError } = await supabase
-          .from("Tags")
-          .upsert(tagsToInsert, {
-            onConflict: "title",
-          });
+        for (const tag of tagsToInsert) {
+          await supabase
+            .from("Tags")
+            .delete()
+            .eq("contentId", tag.contentId)
+            .eq("title", tag.title);
 
-        console.log("HERE 2", TagError);
-
-        if (TagError) throw new Error(TagError.message);
-
-        const parsedDescription = JSON.parse(validation.data.description);
-        console.log("here is parseDescrip", parsedDescription);
+          const { error } = await supabase.from("Tags").insert(tag);
+          if (error) throw new Error("Error while uploading tags");
+        }
         const chunks = splitChunks(
-          `${validation.data.title} ${parsedDescription}`
+          `${validation.data.title} ${validation.data.description}`,
         );
         // vector embeddings process
         for (let i = 0; i < chunks.length; i++) {
@@ -181,7 +181,7 @@ contentRouter.post("/add", async (req: Request, res: Response) => {
             `https://embeddings-server.ashishtiwari.net?token=${token}`,
             {
               data,
-            }
+            },
           );
           const embeddings = embeddingsResponse.data as EmbeddingsResponse;
           const section = {
@@ -196,18 +196,22 @@ contentRouter.post("/add", async (req: Request, res: Response) => {
             .from("Content_Sections")
             .insert([section]);
 
-          if (sectionError) throw new Error(sectionError?.message);
-          await supabase.rpc("commit_transaction");
-
-          res.status(200).json({
-            message: "Successfull",
-            error: "",
-          });
-          return;
+          if (sectionError) throw new Error("Error while uploading Embeddings");
         }
+        await supabase.rpc("commit_transaction");
+
+        res.status(200).json({
+          message: "Submitted",
+          error: "",
+        });
+        return;
       } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : JSON.stringify(error);
         await supabase.rpc("rollback_transaction");
-        res.status(400).json({ message: "Transaction failed", error: error });
+        res
+          .status(400)
+          .json({ message: "Transaction failed", error: errorMessage });
         return;
       }
     } else {
@@ -244,7 +248,7 @@ contentRouter.post("/ask", async (req: Request, res: Response) => {
       `https://embeddings-server.ashishtiwari.net?token=${token}`,
       {
         data,
-      }
+      },
     );
     const embeddings = embeddingsResponse.data as EmbeddingsResponse;
     const queryEmbeddingVector = `[${embeddings.embeddings.join(",")}]`;
@@ -255,7 +259,7 @@ contentRouter.post("/ask", async (req: Request, res: Response) => {
         match_threshold: -0.9,
         match_int: 10,
         userid: req.userId,
-      }
+      },
     );
     console.log("GET", data, "error", MatchError);
 
@@ -280,17 +284,19 @@ contentRouter.post("/ask", async (req: Request, res: Response) => {
   }
 });
 
-contentRouter.get("/getall", async (req: Request, res: Response) => {
+contentRouter.get("/get/all", async (req: Request, res: Response) => {
   const userId = req.userId;
-  console.log("HERE CaME", userId)
+  console.log("HERE CaME", userId);
   try {
     const { data: Contents, error: ContentError } = await supabase
       .from("Content")
-      .select("*")
+      .select("*, Tags(title)")
       .eq("userId", userId);
 
     if (ContentError) throw new Error("Error while fetching");
-    const filteredContents = Contents.map(({ userId, ...rest }) => rest);
+    const filteredContents = Contents.map(
+      ({ userId, ...rest }) => rest,
+    ) as unknown as ReceivedContent[];
 
     res.status(200).json({
       content: filteredContents,
@@ -305,12 +311,108 @@ contentRouter.get("/getall", async (req: Request, res: Response) => {
   }
 });
 
+contentRouter.get("/get/tweets", async (req: Request, res: Response) => {
+  const userId = req.userId;
+  try {
+    const { data: Contents, error: ContentError } = await supabase
+      .from("Content")
+      .select("*, Tags(title)")
+      .eq("userId", userId)
+      .eq("type", "Tweet");
 
-contentRouter.get("/get/:contentId", async (req: Request, res: Response) => {
-  const { contentId } = req.params;
+    if (ContentError) throw new Error("Error while fetching");
+    const filteredContents = Contents.map(
+      ({ userId, ...rest }) => rest,
+    ) as unknown as ReceivedContent;
+    res.status(200).json({
+      content: filteredContents,
+    });
+    return;
+  } catch (error) {
+    error instanceof Error ? error.message : "Something went wrong";
+    res.status(400).json({
+      error,
+    });
+    return;
+  }
+});
+
+contentRouter.get("/get/links", async (req: Request, res: Response) => {
+  const userId = req.userId;
+  try {
+    const { data: Contents, error: ContentError } = await supabase
+      .from("Content")
+      .select("*, Tags(title)")
+      .eq("userId", userId)
+      .eq("type", "Link");
+
+    if (ContentError) throw new Error("Error while fetching");
+    const filteredContents = Contents.map(
+      ({ userId, ...rest }) => rest,
+    ) as unknown as ReceivedContent;
+    res.status(200).json({
+      content: filteredContents,
+    });
+    return;
+  } catch (error) {
+    error instanceof Error ? error.message : "Something went wrong";
+    res.status(400).json({
+      error,
+    });
+    return;
+  }
+});
+
+contentRouter.get("/get/notes", async (req: Request, res: Response) => {
+  const userId = req.userId;
+  try {
+    const { data: Contents, error: ContentError } = await supabase
+      .from("Content")
+      .select("*, Tags(title)")
+      .eq("userId", userId)
+      .eq("type", "Note");
+
+    if (ContentError) throw new Error("Error while fetching");
+    const filteredContents = Contents.map(
+      ({ userId, ...rest }) => rest,
+    ) as unknown as ReceivedContent;
+    res.status(200).json({
+      content: filteredContents,
+    });
+    return;
+  } catch (error) {
+    error instanceof Error ? error.message : "Something went wrong";
+    res.status(400).json({
+      error,
+    });
+    return;
+  }
+});
+
+const cachedData: Keyv<ReceivedContent> = new Keyv({ store: new Map() });
+
+contentRouter.get("/get/content/:url", async (req: Request, res: Response) => {
+  console.log("CONTENT ID REQUEST");
+  const { url } = req.params;
+  if (!url) {
+    res.status(400).json({
+      error: "Invalid content request",
+    });
+    return;
+  }
+  const contentId = url.split("--")[1];
+  console.log("CONTENT ID ", contentId);
   if (!contentId) {
     res.status(400).json({
       error: "Invalid content request",
+    });
+    return;
+  }
+
+  const cache = await cachedData.get(contentId);
+  if (cache) {
+    res.status(200).json({
+      content: cache,
     });
     return;
   }
@@ -318,16 +420,22 @@ contentRouter.get("/get/:contentId", async (req: Request, res: Response) => {
   try {
     const { data: Contents, error: ContentError } = await supabase
       .from("Content")
-      .select("*")
+      .select("*, Tags(title)")
       .eq("userId", userId)
-      .eq("id", contentId)
+      .eq("id", contentId);
 
     if (ContentError) throw new Error("Error while fetching");
-    const filteredContents = Contents.map(({ userId, ...rest }) => rest);
-
+    const filteredContents = Contents.map(
+      ({ userId, ...rest }) => rest,
+    ) as unknown as ReceivedContent[];
     res.status(200).json({
       content: filteredContents,
     });
+    cachedData.set(
+      filteredContents[0]?.id as unknown as string,
+      filteredContents[0] as unknown as ReceivedContent,
+      1000 * 60 * 60 * 24 * 3,
+    );
     return;
   } catch (error) {
     error instanceof Error ? error.message : "Something went wrong";

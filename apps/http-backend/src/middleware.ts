@@ -8,7 +8,7 @@ const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET!;
 export default function middleware(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const token = req.cookies["next-auth.session-token"];
@@ -18,7 +18,7 @@ export default function middleware(
       next();
     }
   } catch (error) {
-    res.status(403).json("Unauthorized Request");
+    res.status(403).json({ error: "Unauthorized Request" });
     return;
   }
 }
