@@ -1,6 +1,6 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
-import debounce from "debounce"
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import debounce from 'debounce';
 import {
   Dialog,
   DialogClose,
@@ -10,33 +10,61 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Command, Search, Target } from 'lucide-react';
-import axios from 'axios';
+import { Command, Search } from 'lucide-react';
+import axios, { AxiosError } from 'axios';
+import { SearchType } from '@repo/common/type';
+import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 export default function SeachDailog() {
   const closeRef = useRef<HTMLButtonElement>(null);
   const openRef = useRef<HTMLButtonElement>(null);
-  const [response, setResponse] = useState<string>("");
+  const searchRef = useRef<HTMLInputElement>(null);
+  const [searchValue, setSearchValue] = useState<string>('');
+  const [response, setResponse] = useState<SearchType[]>([]);
+  const [searchCame, setsearchCame] = useState<boolean>(false);
+  const [searchComplete, setsearchComplete] = useState<boolean>(false);
+  const requestRef = useRef<AbortController | null>(null);
+  const router = useRouter();
 
-  const handleSeach = debounce(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if(e.target.value.length < 5){
-      return
+  useEffect(() => {
+    if (searchRef.current) {
+      searchRef.current.focus();
     }
-    try {
-      const data = {
-        data: e.target.value,
-      };
-      const res = await axios.post(
-        `http://localhost:3001/api/v1/content/ask`,
-        data,
-        { withCredentials: true }
-      );
-      console.log(res.data);
-      setResponse(res.data)
-    } catch (error) {
-      
-    }
-  },500)
+  }, [response, searchValue]);
+
+  const handleSeach = useCallback(
+    debounce(async (search: string) => {
+      if (search.length < 5) return;
+      setsearchComplete(false);
+      if (requestRef.current) {
+        requestRef.current.abort();
+      }
+      requestRef.current = new AbortController();
+      try {
+        const res = await axios.post(
+          `http://localhost:3001/api/v1/content/ask`,
+          { data: search },
+          {
+            withCredentials: true,
+            signal: requestRef.current.signal,
+          }
+        );
+
+        if (res.status >= 400) {
+          throw new Error(res.data.error);
+        }
+        setResponse(res.data.message as SearchType[]);
+        setsearchComplete(true);
+      } catch (error) {
+        toast.error(
+          error instanceof AxiosError ? error.message : 'Something went wrong',
+          { duration: 1000 }
+        );
+      }
+    }, 800),
+    []
+  );
 
   const SeachComp = () => {
     return (
@@ -46,14 +74,60 @@ export default function SeachDailog() {
         </span>
         <input
           type="text"
-          className="focus:border-custom w-full border-0 bg-transparent pl-10 font-medium text-neutral-800 focus:border-b focus:outline-none focus:ring-0 dark:text-neutral-100"
+          className="focus:border-custom w-full rounded-lg border-0 bg-transparent pl-10 font-medium text-neutral-800 focus:border-0 focus:border-b focus:outline-none focus:ring-0 dark:text-neutral-100"
           placeholder="Type to AI search..."
-          onChange={(e) => {handleSeach(e)}}
+          ref={searchRef}
+          onChange={(e) => {
+            const value = e.target.value;
+            setsearchCame(true);
+            setSearchValue(value);
+            handleSeach(value);
+          }}
+          value={searchValue}
         ></input>
         <span className="absolute right-0 top-[8px] mr-2 rounded-lg bg-neutral-700 px-2 py-0.5 text-sm font-medium opacity-50">
           esc
         </span>
       </div>
+    );
+  };
+
+  const ContentLoader = ({ contents }: { contents: SearchType[] }) => {
+    const searchLength =
+      contents.length < 5
+        ? contents.length
+        : contents.length - (contents.length - 5);
+
+    return (
+      <>
+        {searchCame && !searchComplete ? (
+          <SkeletonLoader />
+        ) : (
+          contents.slice(0, searchLength).map((content, index) => (
+            <span
+              key={index}
+              className={`flex h-20 flex-col justify-center px-2 py-2 pl-4 text-neutral-800 hover:cursor-pointer dark:text-neutral-100 ${
+                index !== searchLength - 1 ? 'border-custom border-b' : ''
+              }`}
+              onClick={() => {
+                router.push(
+                  `/content/${content.content_title}--${content.content_id}`
+                );
+              }}
+            >
+              <span className="text-lg font-semibold">
+                {content.content_title}
+                <span
+                  className={`ml-2 rounded-full px-2 py-1 text-sm ${content.content_type === 'Link' ? 'bg-custom-purple' : content.content_type === 'Tweet' ? 'bg-blue-800' : 'bg-orange-500'}`}
+                >
+                  {content.content_type}
+                </span>
+              </span>
+              <span className="opacity-75">{content.sections_content}</span>
+            </span>
+          ))
+        )}
+      </>
     );
   };
 
@@ -74,24 +148,41 @@ export default function SeachDailog() {
   }, []);
   return (
     <Dialog>
-      <DialogTrigger className="focus:outline-none" ref={openRef}>
+      <DialogTrigger
+        className="focus:rounded-lg focus:outline-none focus:ring-[0.5px] focus:ring-blue-900"
+        ref={openRef}
+      >
         <TriggerComp />
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="focus:outline-none focus:ring-0">
         <DialogHeader>
-          <DialogTitle className="">
+          <DialogTitle className="focus:boder-0 focus:outline-none focus:ring-0">
             <SeachComp />
           </DialogTitle>
-          <DialogDescription>
-            This {JSON.stringify(response)}
+          <DialogDescription className="">
+            <ContentLoader contents={response} />
           </DialogDescription>
         </DialogHeader>
-
         <DialogClose ref={closeRef} />
       </DialogContent>
     </Dialog>
   );
 }
+
+const SkeletonLoader = () => {
+  return (
+    <>
+      {Array.from({ length: 5 }).map((_, index) => (
+        <span
+          key={index}
+          className="flex h-20 animate-pulse flex-col justify-center rounded-lg px-6 py-2"
+        >
+          <span className="h-full w-full rounded-lg bg-neutral-300 dark:bg-neutral-700"></span>
+        </span>
+      ))}
+    </>
+  );
+};
 
 const TriggerComp = () => {
   return (
@@ -99,11 +190,10 @@ const TriggerComp = () => {
       <span className="opacity-50 transition-all duration-200 group-hover:opacity-80">
         Search with AI...
       </span>
-      <span className="flex rounded-lg bg-neutral-700 px-2 py-0.5 text-sm opacity-50">
+      <span className="flex rounded-lg bg-neutral-600 px-2 py-0.5 text-sm text-white opacity-50 dark:bg-neutral-700">
         <Command className="h-4 w-4" />
         +k
       </span>
     </div>
   );
 };
-

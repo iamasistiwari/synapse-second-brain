@@ -13,6 +13,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
+import LogoutDailog from './LogoutDailog';
 
 interface SiderBarOptions {
   title: string;
@@ -81,14 +82,7 @@ export default function Sidebar() {
         <span className="text-sm opacity-80">{session.data?.user.name}</span>
 
         {/* needs to change with button */}
-        <button
-          onClick={() => {
-            alert('HI');
-          }}
-          className="hover:cursor-pointer active:scale-90"
-        >
-          <LogOut className="border-custom h-10 w-10 rounded-md border p-2 opacity-80" />
-        </button>
+        <LogoutDailog />
       </div>
     </div>
   );

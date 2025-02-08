@@ -4,7 +4,7 @@ import Markdown from 'markdown-to-jsx';
 import Image from 'next/image';
 import Link from 'next/link';
 
-interface LinkType {
+export interface UseLinkType {
   lang: string;
   author: string;
   title: string;
@@ -169,7 +169,7 @@ export default function ContentCard({ content }: { content: ReceivedContent }) {
       </div>
     );
   }
-  const linkData = JSON.parse(content.description) as unknown as LinkType;
+  const linkData = JSON.parse(content.description) as unknown as UseLinkType;
   return (
     <Link
       href={`/content/${content.title.replace(/\s/g, '')}--${content.id}`}
