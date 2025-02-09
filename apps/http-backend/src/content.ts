@@ -12,6 +12,7 @@ import { GetHash } from "./helpers/validation";
 import fetchMeta from "./helpers/metadata";
 import splitChunks from "./helpers/splitchunks";
 import Keyv from "keyv";
+import { stripMarkdownToSingleLine } from "./helpers/noteparsed";
 
 interface EmbeddingsResponse {
   embeddings: number[];
@@ -21,9 +22,6 @@ const contentRouter: Router = express.Router();
 
 contentRouter.post("/add", async (req: Request, res: Response) => {
   try {
-    console.log("USER ID", req.userId);
-    console.log("BODY", req.body);
-
     const body: ContentType = req.body;
     if (body.type === "Link" || body.type === "Tweet") {
       const validation = tweetLinkValidator.safeParse(body);
@@ -35,7 +33,6 @@ contentRouter.post("/add", async (req: Request, res: Response) => {
         });
         return;
       }
-      console.log("BEFORE META")
       const metadata = await fetchMeta(validation.data.url);
 
       if (!metadata) {
@@ -45,10 +42,12 @@ contentRouter.post("/add", async (req: Request, res: Response) => {
         });
         return;
       }
-      console.log("AFTER META", metadata)
       const userTitle = validation.data.title;
       const urlTitle = metadata.body.data.title;
-      const urlDescription = metadata.body.data.description;
+      let urlDescription = "";
+      if (validation.data.type === "Tweet") {
+        urlDescription = metadata.body.data.description;
+      }
       const urlMetaData = `${userTitle} ${urlTitle} ${urlDescription}`;
       const chunks = splitChunks(urlMetaData);
 
@@ -168,10 +167,12 @@ contentRouter.post("/add", async (req: Request, res: Response) => {
           const { error } = await supabase.from("Tags").insert(tag);
           if (error) throw new Error("Error while uploading tags");
         }
-        const chunks = splitChunks(
-          `${validation.data.title} ${validation.data.description}`,
+        const trimedDescription = stripMarkdownToSingleLine(
+          validation.data.description,
         );
-        // vector embeddings process
+        const chunks = splitChunks(
+          `${validation.data.title} ${trimedDescription}`,
+        );
         for (let i = 0; i < chunks.length; i++) {
           const data = {
             data: chunks[i],
@@ -242,7 +243,6 @@ contentRouter.post("/ask", async (req: Request, res: Response) => {
       .object({ data: zod.string().min(5) })
       .safeParse(data);
     if (!validation.success) throw new Error("Invalid response");
-    console.log("ASK DATA", data);
     const token = GetHash();
     const embeddingsResponse = await axios.get(
       `https://embeddings-server.ashishtiwari.net?token=${token}`,
@@ -261,7 +261,6 @@ contentRouter.post("/ask", async (req: Request, res: Response) => {
         userid: req.userId,
       },
     );
-    console.log("GET", data, "error", MatchError);
 
     if (MatchError) {
       res.status(400).json({
@@ -286,7 +285,6 @@ contentRouter.post("/ask", async (req: Request, res: Response) => {
 
 contentRouter.get("/get/all", async (req: Request, res: Response) => {
   const userId = req.userId;
-  console.log("HERE CaME", userId);
   try {
     const { data: Contents, error: ContentError } = await supabase
       .from("Content")
@@ -392,7 +390,6 @@ contentRouter.get("/get/notes", async (req: Request, res: Response) => {
 const cachedData: Keyv<ReceivedContent> = new Keyv({ store: new Map() });
 
 contentRouter.get("/get/content/:url", async (req: Request, res: Response) => {
-  console.log("CONTENT ID REQUEST");
   const { url } = req.params;
   if (!url) {
     res.status(400).json({
@@ -401,14 +398,12 @@ contentRouter.get("/get/content/:url", async (req: Request, res: Response) => {
     return;
   }
   const contentId = url.split("--")[1];
-  console.log("CONTENT ID ", contentId);
   if (!contentId) {
     res.status(400).json({
       error: "Invalid content request",
     });
     return;
   }
-
   const cache = await cachedData.get(contentId);
   if (cache) {
     res.status(200).json({

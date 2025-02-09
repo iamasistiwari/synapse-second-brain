@@ -5,20 +5,20 @@ import React from 'react';
 
 export default async function page() {
   const contents = await getTweets();
-    if (!contents) {
-      return <div>bad</div>;
-    }
-    return (
-      <div className="">
-        <div className="">
-          <DashboardNav title="Dashboard" />
-        </div>
-  
-        <div className="scrollbar-w-2 scrollbar-track-blue-lighter scrollbar-thumb-blue scrollbar-thumb-rounded mt-4 grid max-h-[42vw] w-full grid-cols-3 gap-4 overflow-y-auto scroll-smooth">
-          {contents.map((content, index) => (
-            <ContentCard key={index} content={content} />
-          ))}
-        </div>
+  if (!contents) {
+    return <div>Bad request</div>;
+  }
+  return (
+    <div className="h-full">
+      <div className="border-custom relative rounded-bl-lg rounded-br-lg border-b px-5 pt-4 xl:px-8 xl:pt-8">
+        <DashboardNav title="Tweets" />
       </div>
-    );
+
+      <div className="scrollbar-w-2 scrollbar-track-blue-lighter scrollbar-thumb-blue scrollbar-thumb-rounded mt-2 grid max-h-[73vh] w-full grid-cols-2 gap-4 overflow-y-auto scroll-smooth px-4 xl:max-h-[85vh] xl:grid-cols-3 xl:px-8">
+        {contents.map((content, index) => (
+          <ContentCard key={index} content={content} />
+        ))}
+      </div>
+    </div>
+  );
 }

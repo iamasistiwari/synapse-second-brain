@@ -7,15 +7,10 @@ export default async function layout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen w-full">
-
-      {/* sidebar */}
+    <div className="flex w-full">
       <Sidebar />
 
-      {/* children */}
-      <aside className="container max-h-screen w-full px-10 py-8">
-        {children}
-      </aside>
+      <aside className="container max-h-screen w-full">{children}</aside>
     </div>
   );
 }

@@ -1,16 +1,12 @@
 import React from 'react';
-import { authOptions } from '@/lib/auth';
-import { getServerSession } from 'next-auth';
-import { ThemeToggle } from '@/components/theme-toggle';
-
+import { ThemeToggle } from '@/components/ui/theme-toggle';
+import LoginDailog from '@/components/LoginDailog';
 
 export default async function page() {
-  const session = await getServerSession(authOptions);
-
   return (
     <div className="h-screen w-screen">
       <ThemeToggle />
-      {JSON.stringify(session)}
+      <LoginDailog />
     </div>
   );
 }

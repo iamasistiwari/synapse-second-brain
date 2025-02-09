@@ -1,15 +1,12 @@
+import { supabase } from '@repo/db/supabase';
+import jwt from 'jsonwebtoken';
 import { NextAuthOptions } from 'next-auth';
+import { JWT } from 'next-auth/jwt';
 import GoogleProvider from 'next-auth/providers/google';
-import prisma from '@repo/db/client';
 
 function getGoogleCredentials() {
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-
-  console.log('Loaded Google Credentials:', {
-    clientIdExists: !!clientId,
-    clientSecretExists: !!clientSecret,
-  });
 
   if (!clientId || clientId.length === 0) {
     throw new Error('client id missing');
@@ -25,30 +22,44 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt',
   },
-  //   pages: {
-  //     signIn: '/login',
-  //     signOut: '/logout',
-  //   },
+  pages: {
+    signIn: '/',
+    signOut: '/dashboard',
+  },
   providers: [
     GoogleProvider({
       clientId: getGoogleCredentials().clientId,
       clientSecret: getGoogleCredentials().clientSecret,
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET!,
+  jwt: {
+    secret: process.env.NEXTAUTH_SECRET!,
+    encode: async ({ token, secret }) => {
+      return jwt.sign(token!, secret, { algorithm: 'HS256' });
+    },
+    decode: async ({ token, secret }) => {
+      return jwt.verify(token!, secret) as Promise<JWT | null>;
+    },
+  },
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === 'google' && user && user.email && user.name) {
-        await prisma.user.upsert({
-          where: { email: user.email },
-          update: { name: user.name, id: user.id, imageUrl: user.image || '' },
-          create: {
-            email: user.email,
-            id: user.id,
-            name: user.name,
-            imageUrl: user.image || '',
-          },
-        });
+        const { error } = await supabase.from('User').upsert(
+          [
+            {
+              email: user.email,
+              id: user.id,
+              name: user.name,
+              imageUrl: user.image || '',
+            },
+          ],
+          { onConflict: 'email' }
+        );
+
+        if (error) {
+          console.error('Error upserting user:', error);
+          throw error;
+        }
       }
       return true;
     },
@@ -70,7 +81,6 @@ export const authOptions: NextAuthOptions = {
         session.user.email = token.email;
         session.user.image = token.picture;
       }
-
       return session;
     },
   },

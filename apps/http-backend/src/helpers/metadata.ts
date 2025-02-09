@@ -7,16 +7,14 @@ const cache: Keyv<LinkType> = new Keyv({ store: new Map() });
 export default async function fetchMeta(url: string): Promise<LinkType | null> {
   try {
     const cachedData = await cache.get(url);
-    // if (cachedData) {
-    //   return cachedData;
-    // }
-    console.log("HERE ")
+    if (cachedData) {
+      return cachedData;
+    }
     const { body } = (await got(
       `https://api.microlink.io?url=${encodeURIComponent(url)}`,
-      { responseType: "json" },
+      { responseType: "json", timeout: 800 },
     )) as unknown as LinkType;
     cache.set(url, { body }, 1000 * 60 * 60 * 24);
-    console.log("body is " ,body)
     return { body };
   } catch (error) {
     return null;

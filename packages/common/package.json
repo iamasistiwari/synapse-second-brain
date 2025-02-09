@@ -1,5 +1,5 @@
 {
-  "name": "@repo/db",
+  "name": "@repo/common",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {},
@@ -8,14 +8,12 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*",
-    "@types/node": "^22.10.10"
+    "@repo/typescript-config": "workspace:*"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.48.1",
-    "dotenv": "^16.4.7"
+    "zod": "^3.24.1"
   },
   "exports": {
-    "./supabase": "./src/supabase.ts"
+    "./type": "./src/type.ts"
   }
 }

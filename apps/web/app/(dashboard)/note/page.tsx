@@ -6,15 +6,15 @@ import React from 'react';
 export default async function page() {
   const contents = await getNotes();
   if (!contents) {
-    return <div>bad</div>;
+    return <div>Bad request</div>;
   }
   return (
-    <div className="">
-      <div className="">
-        <DashboardNav title="Dashboard" />
+    <div className="h-full">
+      <div className="px-5 pt-4 xl:px-8 xl:pt-8">
+        <DashboardNav title="Note" />
       </div>
 
-      <div className="scrollbar-w-2 scrollbar-track-blue-lighter scrollbar-thumb-blue scrollbar-thumb-rounded mt-4 grid max-h-[42vw] w-full grid-cols-3 gap-4 overflow-y-auto scroll-smooth">
+      <div className="scrollbar-w-2 scrollbar-track-blue-lighter scrollbar-thumb-blue scrollbar-thumb-rounded mt-4 grid max-h-[73vh] w-full grid-cols-2 gap-4 overflow-y-auto scroll-smooth px-4 xl:max-h-[85vh] xl:grid-cols-3 xl:px-8">
         {contents.map((content, index) => (
           <ContentCard key={index} content={content} />
         ))}

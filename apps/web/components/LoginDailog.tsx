@@ -14,19 +14,19 @@ import { signIn } from 'next-auth/react';
 import toast from 'react-hot-toast';
 
 export default function LoginDailog() {
-    const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
-    const loginWithGoogle = async () => {
-      setLoading(true);
-      try {
-        await signIn('google', { callbackUrl: '/dashboard' });
-      } catch (error) {
-        toast.error('Something went wrong', { duration: 1000 });
-        console.log(error)
-      } finally {
-        setLoading(false);
-      }
-    };
+  const loginWithGoogle = async () => {
+    setLoading(true);
+    try {
+      await signIn('google', { callbackUrl: '/dashboard' });
+    } catch (error) {
+      toast.error('Something went wrong', { duration: 1000 });
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div>
       <Dialog>
@@ -53,7 +53,7 @@ export default function LoginDailog() {
                     isLoading={loading}
                     type="button"
                     Icon={GoogleIcon}
-                    className="min-w-96 font-semibold "
+                    className="min-w-96 font-semibold"
                     onClick={() => {
                       loginWithGoogle();
                     }}

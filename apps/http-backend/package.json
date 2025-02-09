@@ -24,7 +24,9 @@
     "@types/node": "^22.10.10"
   },
   "dependencies": {
+    "@microlink/mql": "^0.13.14",
     "@prisma/client": "^6.2.1",
+    "axios": "^1.7.9",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
@@ -33,7 +35,6 @@
     "got": "11.8.2",
     "jsdom": "25.0.1",
     "jsonwebtoken": "^9.0.2",
-    "keyv": "4.5.4",
-    "axios": "^1.7.9"
+    "keyv": "4.5.4"
   }
 }

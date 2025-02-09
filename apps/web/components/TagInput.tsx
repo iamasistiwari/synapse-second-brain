@@ -22,7 +22,7 @@ export default function TagInput({ formData, setFormData }: TagInputProps) {
   };
 
   return (
-    <div className="">
+    <div className="w-52 xl:w-96">
       <style>
         {`
           .custom-tags-input .react-tagsinput-tag {
@@ -38,7 +38,7 @@ export default function TagInput({ formData, setFormData }: TagInputProps) {
         inputProps={{
           placeholder: 'Enter your tags',
           className:
-            'border h-11 w-96 rounded-lg bg-transparent px-3 text-black focus:outline-none dark:text-white',
+            'border h-11 w-full rounded-lg bg-transparent px-3 text-black focus:outline-none dark:text-white',
         }}
         className="custom-tags-input"
       />

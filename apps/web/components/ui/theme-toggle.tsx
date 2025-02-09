@@ -25,7 +25,7 @@ export function ThemeToggle() {
 
   return (
     <div
-      className="flex h-10 w-10 items-center justify-center rounded-md border border-neutral-300 hover:cursor-pointer active:scale-90 dark:border-neutral-800"
+      className="flex h-10 w-10 items-center justify-center rounded-lg border border-neutral-300 hover:cursor-pointer active:scale-90 dark:border-neutral-800"
       onClick={toggleTheme}
     >
       {theme === 'light' ? (

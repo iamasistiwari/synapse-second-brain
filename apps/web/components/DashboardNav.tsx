@@ -17,12 +17,13 @@ export default function DashboardNav({ title }: { title: string }) {
           <div className="mb-1 flex items-center justify-center">
             <ThemeToggle />
           </div>
-          <div className="mb-1">
+          <div className="mb-1 hidden xl:block">
             <SeachDailog />
           </div>
           <Button
             Icon={Plus}
             isLoading={isContent}
+            className="hidden xl:flex"
             onClick={() => {
               setIsContent(true);
               setTimeout(() => {
@@ -33,7 +34,12 @@ export default function DashboardNav({ title }: { title: string }) {
           >
             Add Content
           </Button>
-          <Button Icon={Share2} isLoading={false} variant={'ghost'}>
+          <Button
+            Icon={Share2}
+            isLoading={false}
+            variant={'ghost'}
+            className="hidden xl:flex"
+          >
             Share Content
           </Button>
         </div>

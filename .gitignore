@@ -24,7 +24,7 @@ coverage
 out/
 build
 dist
-.vscode/
+
 
 
 # Debug

@@ -30,6 +30,7 @@ export default withAuth(
       '/addcontent',
       '/content',
       '/content/:path*',
+      '/info',
     ];
     const isAccessingSensitiveRoutes = sensitiveRoutes.some((route) => {
       return pathname.startsWith(route);
@@ -42,7 +43,7 @@ export default withAuth(
       return NextResponse.next();
     }
     if (!isAuth && isAccessingSensitiveRoutes) {
-      return NextResponse.redirect(new URL('/login', request.url));
+      return NextResponse.redirect(new URL('/', request.url));
     }
     if (isAuth && pathname === '/') {
       return NextResponse.redirect(new URL('/dashboard', request.url));
@@ -70,5 +71,6 @@ export const config = {
     '/note',
     '/tweets',
     '/tags',
+    '/info',
   ],
 };
