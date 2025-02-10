@@ -9,7 +9,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import Button from './ui/Button';
-import { LogIn } from 'lucide-react';
 import { signIn } from 'next-auth/react';
 import toast from 'react-hot-toast';
 
@@ -34,11 +33,11 @@ export default function LoginDailog() {
           asChild
           className="focus:rounded-lg focus:outline-none focus:ring-[0.5px] focus:ring-blue-900"
         >
-          <Button isLoading={false} Icon={LogIn}>
-            Log in
-          </Button>
+          <button className="border-custom cursor-pointer rounded-lg border p-2 px-4 outline-none ring-0 transition-all duration-500 hover:text-purple-400 focus:outline-none active:scale-105">
+            Start now
+          </button>
         </DialogTrigger>
-        <DialogContent className="focus:outline-none focus:ring-0">
+        <DialogContent className="rounded-2xl px-10 py-5 focus:outline-none focus:ring-0">
           <DialogHeader>
             <DialogTitle
               asChild
@@ -46,14 +45,14 @@ export default function LoginDailog() {
             >
               <div className="flex h-full w-full flex-col items-center justify-center">
                 <div className="flex flex-col">
-                  <h1 className="mb-5 w-96 justify-center text-center text-lg font-medium lg:text-xl">
+                  <h1 className="mb-5 justify-center text-center text-lg font-medium lg:text-xl xl:w-96">
                     Sign in to your account
                   </h1>
                   <Button
                     isLoading={loading}
                     type="button"
                     Icon={GoogleIcon}
-                    className="min-w-96 font-semibold"
+                    className="font-semibold xl:min-w-96"
                     onClick={() => {
                       loginWithGoogle();
                     }}

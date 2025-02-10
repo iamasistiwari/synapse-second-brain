@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'Synapse',
-  description: '',
+  description: 'App that allow to store user links notes and allow vector embedding searching.',
 };
 
 export default function RootLayout({

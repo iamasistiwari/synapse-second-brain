@@ -3,6 +3,9 @@ import contentRouter from "./content";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import middleware from "./middleware";
+import checkEnv from "./helpers/checkEnvs";
+
+checkEnv();
 
 const app = express();
 const PORT = 3001;

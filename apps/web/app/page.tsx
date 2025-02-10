@@ -1,4 +1,3 @@
-'use client';
 import React from 'react';
 import { Brain, Link2, Search } from 'lucide-react';
 import LoginDailog from '@/components/LoginDailog';
