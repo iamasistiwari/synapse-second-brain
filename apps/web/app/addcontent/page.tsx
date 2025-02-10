@@ -270,7 +270,7 @@ export default function Page() {
               >
                 Enter note*
               </label>
-              <div className="border-custom h-[25vh] w-[80vw] rounded-lg border xl:w-full">
+              <div className="border-custom min-h-[25vh] w-[80vw] rounded-lg border xl:w-full">
                 <EditorComponent
                   formData={formData}
                   setFormData={setFormData}
