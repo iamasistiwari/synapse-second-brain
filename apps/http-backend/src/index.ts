@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(middleware);
-app.use("/api/v1/content", contentRouter);
+app.use("/v1/content", contentRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
