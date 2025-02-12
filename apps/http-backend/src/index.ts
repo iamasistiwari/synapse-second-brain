@@ -10,7 +10,7 @@ checkEnv();
 const app = express();
 const PORT = 3001;
 
-app.use(cors({ origin: ["http://localhost:3000", "https://synapse.ashishtiwari.net"], credentials: true }));
+app.use(cors({ origin: "https://synapse.ashishtiwari.net", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
