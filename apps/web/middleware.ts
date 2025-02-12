@@ -17,7 +17,9 @@ async function verifyToken(token: string): Promise<boolean> {
 export default withAuth(
   async function middleware(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
-    const token = request.cookies.get('next-auth.session-token')?.value;
+    const token = request.cookies.get(
+      '__Secure-next-auth.session-token'
+    )?.value;
     const isAuth = await verifyToken(token || '');
     const isLoginPage = pathname.startsWith('/login');
 
