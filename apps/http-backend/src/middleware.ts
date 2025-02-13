@@ -13,7 +13,7 @@ export default function middleware(
 ) {
   try {
     let token;
-    if (NODE_ENV === "prod") {
+    if (NODE_ENV === "production") {
       token = req.cookies["__Secure-next-auth.session-token"];
     } else {
       token = req.cookies["next-auth.session-token"];
