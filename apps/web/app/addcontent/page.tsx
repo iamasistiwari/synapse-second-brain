@@ -1,10 +1,10 @@
 'use client';
 import revalidate from '@/actions/revalidate';
+import submitContent from '@/actions/submitContent';
 import EditorComponent from '@/components/Editor';
 import TagInput from '@/components/TagInput';
 import Button from '@/components/ui/Button';
 import { ContentType } from '@repo/common/type';
-import axios, { AxiosError } from 'axios';
 import { FileText, Link, Send, Twitter } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
@@ -45,6 +45,7 @@ export default function Page() {
   const handleSubmit = async () => {
     const toastId = toast.loading('Submitting..');
     setLoading(true);
+
     try {
       const data = formData;
       const formValidation = FormValidator.safeParse(formData);
@@ -72,27 +73,17 @@ export default function Page() {
           throw new Error('Note: 10+ chars');
         }
       }
-      const res = await axios.post(
-        `http://localhost:3001/api/v1/content/add`,
-        data,
-        { withCredentials: true }
-      );
-      if (res) {
-        toast.success(res.data.message, { id: toastId, duration: 1500 });
-        revalidate();
-        router.push(`/dashboard`);
-        return;
+      const responseData = await submitContent(data);
+
+      if(responseData.error !== ""){
+        toast.error(`${responseData.error}`, { id: toastId, duration: 1000 });
+        return 
       }
+      toast.success(responseData.message, { id: toastId, duration: 1500 });
+      revalidate();
+      router.push(`/dashboard`);
+      return;
     } catch (error) {
-      if (error instanceof AxiosError) {
-        const errorDeatils = error.response?.data.error;
-        new Promise(() => {
-          setTimeout(() => {
-            toast.error(`${errorDeatils}`, { id: toastId, duration: 1000 });
-          }, 500);
-        });
-        return;
-      }
       const ErrorDetails =
         error instanceof Error ? error.message : 'Something went wrong';
       new Promise(() => {

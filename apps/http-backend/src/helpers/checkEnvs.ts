@@ -5,8 +5,15 @@ export default function checkEnv() {
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_KEY = process.env.SUPABASE_KEY;
   const SECRET_KEY = process.env.SECRET_KEY;
+  const NODE_ENV = process.env.NODE_ENV;
 
-  if (!NEXTAUTH_SECRET || !SUPABASE_URL || !SUPABASE_KEY || !SECRET_KEY) {
+  if (
+    !NEXTAUTH_SECRET ||
+    !SUPABASE_URL ||
+    !SUPABASE_KEY ||
+    !SECRET_KEY ||
+    !NODE_ENV
+  ) {
     throw new Error("ENV VARIABLES IS MISSING");
   }
 }

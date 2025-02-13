@@ -43,7 +43,7 @@ export default function SeachDailog() {
       requestRef.current = new AbortController();
       try {
         const res = await axios.post(
-          `http://localhost:3001/api/v1/content/ask`,
+          `https://api-synapse.ashishtiwari.net/api/v1/content/ask`,
           { data: search },
           {
             withCredentials: true,

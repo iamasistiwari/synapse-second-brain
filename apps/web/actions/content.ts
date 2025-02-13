@@ -10,18 +10,20 @@ export async function getContents(): Promise<ReceivedContent[] | null> {
     return null;
   }
   try {
-    const res = await fetch(`https://api-synapse.ashishtiwari.net/api/v1/content/get/all`, {
-      method: 'GET',
-      headers: {
-        Cookie: (await cookies()).toString(),
-      },
-      credentials: 'include',
-      cache: 'force-cache',
-      next: {
-        tags: ['contents'],
-      },
-    });
-
+    const res = await fetch(
+      `https://api-synapse.ashishtiwari.net/api/v1/content/get/all`,
+      {
+        method: 'GET',
+        headers: {
+          Cookie: (await cookies()).toString(),
+        },
+        credentials: 'include',
+        cache: 'force-cache',
+        next: {
+          tags: ['contents'],
+        },
+      }
+    );
     const data = await res.json();
     if (!res.ok) {
       throw new Error(`Error is ${data.error}`);
@@ -44,20 +46,17 @@ export async function getTweets(): Promise<ReceivedContent[] | null> {
     return null;
   }
   try {
-    const res = await fetch(
-      `https://api-synapse.ashishtiwari.net/api/v1/content/get/tweets`,
-      {
-        method: 'GET',
-        headers: {
-          Cookie: (await cookies()).toString(),
-        },
-        cache: 'force-cache',
-        credentials: 'include',
-        next: {
-          tags: ['contents'],
-        },
-      }
-    );
+    const res = await fetch(`https://api-synapse.ashishtiwari.net/api/v1/content/get/tweets`, {
+      method: 'GET',
+      headers: {
+        Cookie: (await cookies()).toString(),
+      },
+      cache: 'force-cache',
+      credentials: 'include',
+      next: {
+        tags: ['contents'],
+      },
+    });
 
     const data = await res.json();
     if (!res.ok) {
@@ -81,20 +80,17 @@ export async function getLinks(): Promise<ReceivedContent[] | null> {
     return null;
   }
   try {
-    const res = await fetch(
-      `https://api-synapse.ashishtiwari.net/api/v1/content/get/links`,
-      {
-        method: 'GET',
-        headers: {
-          Cookie: (await cookies()).toString(),
-        },
-        cache: 'force-cache',
-        credentials: 'include',
-        next: {
-          tags: ['contents'],
-        },
-      }
-    );
+    const res = await fetch(`https://api-synapse.ashishtiwari.net/api/v1/content/get/links`, {
+      method: 'GET',
+      headers: {
+        Cookie: (await cookies()).toString(),
+      },
+      cache: 'force-cache',
+      credentials: 'include',
+      next: {
+        tags: ['contents'],
+      },
+    });
 
     const data = await res.json();
     if (!res.ok) {
@@ -119,20 +115,17 @@ export async function getNotes(): Promise<ReceivedContent[] | null> {
   }
 
   try {
-    const res = await fetch(
-      `https://api-synapse.ashishtiwari.net/api/v1/content/get/notes`,
-      {
-        method: 'GET',
-        headers: {
-          Cookie: (await cookies()).toString(),
-        },
-        cache: 'force-cache',
-        credentials: 'include',
-        next: {
-          tags: ['contents'],
-        },
-      }
-    );
+    const res = await fetch(`https://api-synapse.ashishtiwari.net/api/v1/content/get/notes`, {
+      method: 'GET',
+      headers: {
+        Cookie: (await cookies()).toString(),
+      },
+      cache: 'force-cache',
+      credentials: 'include',
+      next: {
+        tags: ['contents'],
+      },
+    });
 
     const data = await res.json();
     if (!res.ok) {
