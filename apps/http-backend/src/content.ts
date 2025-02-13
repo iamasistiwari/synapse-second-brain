@@ -120,9 +120,7 @@ contentRouter.post("/add", async (req: Request, res: Response) => {
         const errorMessage =
           error instanceof Error ? error.message : JSON.stringify(error);
         await supabase.rpc("rollback_transaction");
-        res
-          .status(400)
-          .json({ message: "Transaction failed", error: errorMessage });
+        res.status(400).json({ message: "", error: errorMessage });
         return;
       }
     }
@@ -212,13 +210,13 @@ contentRouter.post("/add", async (req: Request, res: Response) => {
         await supabase.rpc("rollback_transaction");
         res
           .status(400)
-          .json({ message: "Transaction failed", error: errorMessage });
+          .json({ message: "", error: errorMessage });
         return;
       }
     } else {
       res.status(400).json({
-        message: "Invalid payload",
-        error: "Provide correct payload",
+        message: "",
+        error: "Invalid payload",
       });
       return;
     }
@@ -226,12 +224,15 @@ contentRouter.post("/add", async (req: Request, res: Response) => {
     if (error instanceof zod.ZodError) {
       const errorss = error.issues.map((issue) => issue.message);
       res.status(400).json({
-        message: "Invalid payload",
-        error: errorss.map((issue) => issue),
+        message: "",
+        error: "Invalid Payload"
       });
       return;
     }
-    res.status(500).json("Something went wrong");
+    res.status(500).json({
+      message:"",
+      error: "Something went wrong"
+    });
     return;
   }
 });
@@ -264,8 +265,8 @@ contentRouter.post("/ask", async (req: Request, res: Response) => {
 
     if (MatchError) {
       res.status(400).json({
-        message: "Failed with query embeddings",
-        error: MatchError.details,
+        message: "",
+        error: "Failed with query embeddings",
       });
     }
     res.status(200).json({

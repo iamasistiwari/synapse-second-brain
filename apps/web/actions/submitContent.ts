@@ -1,6 +1,7 @@
 'use server'
 import { ContentType } from '@repo/common/type';
 import { cookies } from 'next/headers';
+import revalidate from './revalidate';
 
 interface ReceivedData {
     message: string,
@@ -22,11 +23,12 @@ export default async function submitContent(data: ContentType): Promise<Received
       }
     );
     const parseRes = await res.json();
-    if(!parseRes.ok){
-        return {
-            message: "",
-            error: parseRes.error
-        }
+    revalidate()
+    if(!res.ok){
+      return {
+        message: "",
+        error: parseRes.error
+      }
     }
     const response = parseRes as ReceivedData;
     return response;

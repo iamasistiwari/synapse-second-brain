@@ -80,7 +80,6 @@ export default function Page() {
         return 
       }
       toast.success(responseData.message, { id: toastId, duration: 1500 });
-      revalidate();
       router.push(`/dashboard`);
       return;
     } catch (error) {
