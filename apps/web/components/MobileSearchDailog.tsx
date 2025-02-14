@@ -11,10 +11,10 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Search } from 'lucide-react';
-import axios, { AxiosError } from 'axios';
 import { SearchType } from '@repo/common/type';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import { askContent } from '@/actions/content';
 
 export default function MobileSearchDailog({
   openRef,
@@ -22,13 +22,11 @@ export default function MobileSearchDailog({
   openRef: React.RefObject<HTMLButtonElement | null>;
 }) {
   const closeRef = useRef<HTMLButtonElement>(null);
-  //   const openRef = useRef<HTMLButtonElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const [searchValue, setSearchValue] = useState<string>('');
   const [response, setResponse] = useState<SearchType[]>([]);
   const [searchCame, setsearchCame] = useState<boolean>(false);
   const [searchComplete, setsearchComplete] = useState<boolean>(false);
-  const requestRef = useRef<AbortController | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -41,30 +39,14 @@ export default function MobileSearchDailog({
     debounce(async (search: string) => {
       if (search.length < 5) return;
       setsearchComplete(false);
-      if (requestRef.current) {
-        requestRef.current.abort();
-      }
-      requestRef.current = new AbortController();
-      try {
-        const res = await axios.post(
-          `https://api-synapse.ashishtiwari.net/api/v1/content/ask`,
-          { data: search },
-          {
-            withCredentials: true,
-            signal: requestRef.current.signal,
-          }
-        );
-
-        if (res.status >= 400) {
-          throw new Error(res.data.error);
-        }
-        setResponse(res.data.message as SearchType[]);
+      const res = await askContent({ data: search });
+      if (res.content && res.error.length < 1) {
+        setResponse(res.content);
         setsearchComplete(true);
-      } catch (error) {
-        toast.error(
-          error instanceof AxiosError ? error.message : 'Something went wrong',
-          { duration: 1000 }
-        );
+        return;
+      } else {
+        toast.error(res.error, { duration: 1000 });
+        return;
       }
     }, 800),
     []

@@ -4,8 +4,6 @@ import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
 
 const NODE_ENV = process.env.NODE_ENV!;
-console.log("NODE_ENV IS", NODE_ENV)
-
 async function verifyToken(token: string): Promise<boolean> {
   try {
     const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET!);
