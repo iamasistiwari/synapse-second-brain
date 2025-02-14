@@ -208,9 +208,7 @@ contentRouter.post("/add", async (req: Request, res: Response) => {
         const errorMessage =
           error instanceof Error ? error.message : JSON.stringify(error);
         await supabase.rpc("rollback_transaction");
-        res
-          .status(400)
-          .json({ message: "", error: errorMessage });
+        res.status(400).json({ message: "", error: errorMessage });
         return;
       }
     } else {
@@ -225,13 +223,13 @@ contentRouter.post("/add", async (req: Request, res: Response) => {
       const errorss = error.issues.map((issue) => issue.message);
       res.status(400).json({
         message: "",
-        error: "Invalid Payload"
+        error: "Invalid Payload",
       });
       return;
     }
     res.status(500).json({
-      message:"",
-      error: "Something went wrong"
+      message: "",
+      error: "Something went wrong",
     });
     return;
   }
@@ -257,18 +255,14 @@ contentRouter.post("/ask", async (req: Request, res: Response) => {
       "match_filtered_sections",
       {
         query_embedding: queryEmbeddingVector,
-        match_threshold: -0.9,
+        match_threshold: 0.1,
         match_int: 10,
         userid: req.userId,
       },
     );
 
-    if (MatchError) {
-      res.status(400).json({
-        message: "",
-        error: "Failed with query embeddings",
-      });
-    }
+    if (MatchError) throw new Error("Failed with query embeddings");
+
     res.status(200).json({
       message: matchingSections,
       error: "",
@@ -388,12 +382,11 @@ contentRouter.get("/get/notes", async (req: Request, res: Response) => {
   }
 });
 
-const cachedData: Keyv<ReceivedContent> = new Keyv({ store: new Map() });
-
 contentRouter.get("/get/content/:url", async (req: Request, res: Response) => {
   const { url } = req.params;
   if (!url) {
     res.status(400).json({
+      message: "",
       error: "Invalid content request",
     });
     return;
@@ -401,14 +394,8 @@ contentRouter.get("/get/content/:url", async (req: Request, res: Response) => {
   const contentId = url.split("--")[1];
   if (!contentId) {
     res.status(400).json({
+      message: "",
       error: "Invalid content request",
-    });
-    return;
-  }
-  const cache = await cachedData.get(contentId);
-  if (cache) {
-    res.status(200).json({
-      content: cache,
     });
     return;
   }
@@ -427,11 +414,6 @@ contentRouter.get("/get/content/:url", async (req: Request, res: Response) => {
     res.status(200).json({
       content: filteredContents,
     });
-    cachedData.set(
-      filteredContents[0]?.id as unknown as string,
-      filteredContents[0] as unknown as ReceivedContent,
-      1000 * 60 * 60 * 24 * 3,
-    );
     return;
   } catch (error) {
     error instanceof Error ? error.message : "Something went wrong";

@@ -9,7 +9,7 @@ const NODE_ENV = process.env.NODE_ENV!;
 export default function middleware(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     let token;

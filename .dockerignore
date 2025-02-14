@@ -1,6 +1,7 @@
 node_modules/
 .vscode/
 .turbo
+docker/
 
 /apps/web/node_modules/
 /apps/web/.turbo/

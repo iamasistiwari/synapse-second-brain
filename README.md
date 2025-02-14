@@ -1,4 +1,3 @@
-
 # Synapse- Second brain
 
 This project is a full-stack application built using **Turborepo** that allows users to create and manage notes. It features a **novel editor** to add notes, auto-fetches metadata from links, stores content in **Supabase PostgreSQL**, and supports **embeddings search** through the content.
@@ -12,17 +11,16 @@ This project is a full-stack application built using **Turborepo** that allows u
 
 ## Tech Stack
 
-- **Frontend**:  
+- **Frontend**:
   - [Next.js](https://nextjs.org/) - React framework for building the web app.
   - [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework for styling.
-  
-- **Backend**:  
+- **Backend**:
   - [Express.js](https://expressjs.com/) - Web framework for Node.js used to build the backend APIs.
-  
-- **Database**:  
+- **Database**:
+
   - [Supabase](https://supabase.io/) - Open-source backend-as-a-service providing a PostgreSQL database for storing notes.
 
-- **Embeddings & Search**:  
+- **Embeddings & Search**:
   - Integration with **Embeddings** for efficient semantic search.
 
 ## Setup
@@ -32,7 +30,6 @@ This project is a full-stack application built using **Turborepo** that allows u
 - [Node.js](https://nodejs.org/) (>=23.0)
 - [pnpm](https://www.pnpm.io/)
 - [Supabase](https://supabase.io/) account for database and authentication setup
-
 
 ## Usage
 

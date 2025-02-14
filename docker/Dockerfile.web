@@ -1,0 +1,27 @@
+FROM node:23-alpine
+
+WORKDIR /app
+
+RUN npm install -g pnpm
+
+COPY package.json pnpm-lock.yaml ./
+COPY turbo.json ./
+COPY pnpm-workspace.yaml ./
+
+RUN pnpm install
+
+# COPY apps/web/ apps/web/
+# COPY packages/ packages/
+
+# RUN pnpm install --filter=web
+
+COPY . .
+
+RUN pnpm install --filter=web
+
+
+RUN pnpm build --filter=web
+
+EXPOSE 3000
+
+CMD ["pnpm", "start", "--filter=web"]

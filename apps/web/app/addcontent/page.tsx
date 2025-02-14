@@ -1,6 +1,5 @@
 'use client';
-import revalidate from '@/actions/revalidate';
-import submitContent from '@/actions/submitContent';
+import { submitContent } from '@/actions/content';
 import EditorComponent from '@/components/Editor';
 import TagInput from '@/components/TagInput';
 import Button from '@/components/ui/Button';
@@ -75,9 +74,9 @@ export default function Page() {
       }
       const responseData = await submitContent(data);
 
-      if(responseData.error !== ""){
+      if (responseData.error !== '') {
         toast.error(`${responseData.error}`, { id: toastId, duration: 1000 });
-        return 
+        return;
       }
       toast.success(responseData.message, { id: toastId, duration: 1500 });
       router.push(`/dashboard`);

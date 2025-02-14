@@ -18,7 +18,7 @@ export default function EditorComponent({
 }: EditorProps) {
   return (
     <Editor
-      className="w-full"
+      className="w-full max-w-[80vw]"
       defaultValue={formData.description}
       disableLocalStorage={true}
       onUpdate={(editor) => {

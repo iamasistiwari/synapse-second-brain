@@ -17,6 +17,9 @@ export const metadata: Metadata = {
   title: 'Synapse',
   description:
     'App that allow to store user links notes and allow vector embedding searching.',
+  icons: {
+    icon: '/favicon.png',
+  },
 };
 
 export default function RootLayout({
