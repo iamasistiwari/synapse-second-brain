@@ -33,11 +33,11 @@ export default function LoginDailog() {
           asChild
           className="focus:rounded-lg focus:outline-none focus:ring-[0.5px] focus:ring-blue-900"
         >
-          <button className="border-custom cursor-pointer rounded-lg border p-2 px-4 outline-none ring-0 transition-all duration-500 hover:text-purple-400 focus:outline-none active:scale-105">
+          <button className="cursor-pointer rounded-lg border border-neutral-700 p-2 px-4 text-white outline-none ring-0 transition-all duration-500 hover:text-purple-400 focus:outline-none active:scale-105">
             Start now
           </button>
         </DialogTrigger>
-        <DialogContent className="rounded-2xl px-10 py-5 focus:outline-none focus:ring-0">
+        <DialogContent className="rounded-2xl border border-neutral-700 px-10 py-5 focus:outline-none ring-2 ring-violet-600 ">
           <DialogHeader>
             <DialogTitle
               asChild

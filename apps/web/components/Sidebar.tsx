@@ -111,7 +111,7 @@ export default function Sidebar() {
           </div>
         </div>
 
-        <div className="flex items-center space-x-2 px-4 pt-6 mb-10 border-t border-custom">
+        <div className="flex justify-center items-center space-x-2 px-4 pt-6 mb-10 border-t border-custom">
           <Image
             src={session.data?.user.image || 'https://github.com/shadcn.png'}
             alt="image"

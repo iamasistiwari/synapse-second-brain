@@ -4,10 +4,10 @@ import LoginDailog from '@/components/LoginDailog';
 import Link from 'next/link';
 export default function Page() {
   return (
-    <div className="h-screen">
+    <div className="h-screen text-white">
       <div className="absolute inset-0 -z-10 h-screen w-full items-center px-5 py-24 [background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)]"></div>
       <nav className="flex items-center justify-center transition-all duration-200 xl:mx-44">
-        <div className="border-custom flex h-16 w-full items-center justify-between px-4 text-center text-lg xl:h-24 xl:border-b">
+        <div className="flex h-16 w-full items-center justify-between border-neutral-700 px-4 text-center text-lg xl:h-24 xl:border-b">
           <div className="flex items-center justify-center">
             <Brain className="h-6 w-6 text-custom-purple xl:h-10 xl:w-10" />
             <span className="pl-2 text-2xl font-semibold leading-10 tracking-wider text-slate-200">
@@ -15,7 +15,7 @@ export default function Page() {
             </span>
           </div>
           {/* Navbar Links */}
-          <div className="border-custom hidden gap-x-6 rounded-2xl border px-6 py-1 opacity-80 xl:flex">
+          <div className="hidden gap-x-6 rounded-2xl border border-neutral-700 px-6 py-1 opacity-80 xl:flex">
             <Link
               href={`https://github.com/iamasistiwari/synapse-second-brain`}
               target="_blank"
@@ -73,7 +73,7 @@ export default function Page() {
         </Link>
       </div>
       <div className="mt-20 hidden flex-row justify-center opacity-85 transition-all duration-200 xl:flex xl:space-x-20">
-        <div className="border-custom flex flex-col rounded-lg border p-2 text-start transition-all duration-500 hover:cursor-pointer hover:border-purple-400">
+        <div className="flex flex-col rounded-lg border border-neutral-700 p-2 text-start transition-all duration-500 hover:cursor-pointer hover:border-purple-400">
           <div className="flex items-center">
             <Search className="h-6 w-6 font-semibold" />
             <span className="pl-2 font-semibold xl:text-2xl">
@@ -85,7 +85,7 @@ export default function Page() {
             embeddings search that understands context.
           </span>
         </div>
-        <div className="border-custom flex flex-col rounded-lg border p-2 text-start transition-all duration-500 hover:cursor-pointer hover:border-purple-400">
+        <div className="flex flex-col rounded-lg border border-neutral-700 p-2 text-start transition-all duration-500 hover:cursor-pointer hover:border-purple-400">
           <div className="flex items-center">
             <Link2 className="h-6 w-6 font-semibold" />
             <span className="pl-2 font-semibold xl:text-2xl">Metdata</span>
