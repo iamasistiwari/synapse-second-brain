@@ -88,7 +88,7 @@ export default function Sidebar() {
   const session = useSession();
   const pathname = usePathname();
   return (
-    <div className="h-[100vh] border-r border-custom">
+    <div className="h-full border-r border-custom">
 
       <div className="hidden min-w-[250px] px-4 py-5 xl:flex flex-col justify-between min-h-full">
         <div>
