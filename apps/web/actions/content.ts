@@ -5,7 +5,7 @@ import { ContentType, ReceivedContent, SearchType } from '@repo/common/type';
 import { getServerSession } from 'next-auth';
 import { cookies } from 'next/headers';
 import revalidate from './revalidate';
-import React from 'react';
+
 
 interface ReceivedData {
   message: string;
