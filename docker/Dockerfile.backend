@@ -6,29 +6,26 @@ ARG NEXTAUTH_SECRET
 ARG NODE_ENV
 ARG SECRET_KEY
 
-ENV SUPABASE_URL=$SUPABASE_URL
-ENV SUPABASE_KEY=$SUPABASE_KEY
-ENV NEXTAUTH_SECRET=$NEXTAUTH_SECRET
-ENV NODE_ENV=$NODE_ENV
-ENV SECRET_KEY=$SECRET_KEY
+ENV SUPABASE_URL=${SUPABASE_URL}
+ENV SUPABASE_KEY=${SUPABASE_KEY}
+ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+ENV NODE_ENV=${NODE_ENV}
+ENV SECRET_KEY=${SECRET_KEY}
 
 WORKDIR /app
 
-RUN npm install -g pnpm
-
-RUN echo "SUPABASE_URL=$SUPABASE_URL"
+RUN npm install -g pnpm typescript
 
 COPY package.json pnpm-lock.yaml ./
 COPY turbo.json ./
 COPY pnpm-workspace.yaml ./
-
 
 COPY apps/http-backend/ apps/http-backend/
 COPY packages/ packages/
 
 RUN pnpm install
 
-RUN cd apps/http-backend && pnpm run build && cd ../..
+RUN cd apps/http-backend && pnpm install && pnpm run build && cd ../..
 
 EXPOSE 3001
 
