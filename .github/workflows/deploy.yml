@@ -65,5 +65,5 @@ jobs:
           echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker pull asisserver/synapse-web:${{ github.sha }}
           echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker stop synapse-web || true
           echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker rm synapse-web || true
-          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker run -d --name synapse-web -p 3001:3001 --restart always \
+          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker run -d --name synapse-web -p 3000:3000 --restart always \
           asisserver/synapse-web:${{ github.sha }}
