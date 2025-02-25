@@ -1,0 +1,28 @@
+FROM node:23-alpine
+
+ARG SUPABASE_URL
+ARG SUPABASE_KEY
+
+ENV SUPABASE_URL=$SUPABASE_URL
+ENV SUPABASE_KEY=$SUPABASE_KEY
+
+WORKDIR /app
+
+RUN npm install -g pnpm
+
+COPY package.json pnpm-lock.yaml ./
+COPY turbo.json ./
+COPY pnpm-workspace.yaml ./
+
+RUN pnpm install
+
+COPY apps/http-backend/ apps/http-backend/
+COPY packages/ packages/
+
+RUN pnpm install --filter=http-backend
+
+RUN pnpm build --filter=http-backend
+
+EXPOSE 3001
+
+CMD ["pnpm", "start", "--filter=http-backend"]

@@ -1,5 +1,12 @@
 FROM node:23-alpine
 
+ARG SUPABASE_URL
+ARG SUPABASE_KEY
+ARG GOOGLE_CLIENT_ID
+ARG GOOGLE_CLIENT_SECRET
+ARG NEXTAUTH_SECRET
+ARG NEXTAUTH_URL
+
 WORKDIR /app
 
 RUN npm install -g pnpm
@@ -8,20 +15,13 @@ COPY package.json pnpm-lock.yaml ./
 COPY turbo.json ./
 COPY pnpm-workspace.yaml ./
 
+COPY apps/web/ apps/web/
+COPY packages/ packages/
+
 RUN pnpm install
 
-# COPY apps/web/ apps/web/
-# COPY packages/ packages/
-
-# RUN pnpm install --filter=web
-
-COPY . .
-
-RUN pnpm install --filter=web
-
-
-RUN pnpm build --filter=web
+RUN cd apps/web && SUPABASE_URL=${SUPABASE_URL} SUPABASE_KEY=${SUPABASE_KEY} GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET} NEXTAUTH_SECRET=${NEXTAUTH_SECRET} NEXTAUTH_URL=${NEXTAUTH_URL} pnpm run build && cd ../..
 
 EXPOSE 3000
 
-CMD ["pnpm", "start", "--filter=web"]
+CMD ["pnpm", "run", "start-web"]

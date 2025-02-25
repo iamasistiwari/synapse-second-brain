@@ -1,0 +1,69 @@
+name: Build and Deploy to Docker Hub & VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check Out Repo
+      uses: actions/checkout@v2
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build backend and Push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ./docker/Dockerfile.backend
+        push: true
+        tags: asisserver/synapse-backend:${{ github.sha }}
+        build-args: |
+          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
+          NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
+          NODE_ENV=${{ secrets.NODE_ENV }}
+          SECRET_KEY=${{ secrets.SECRET_KEY }}
+
+
+    - name: Build web and Push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ./docker/Dockerfile.web
+        push: true
+        tags: asisserver/synapse-web:${{ github.sha }}
+        build-args: |
+          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
+          NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
+          NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
+          SECRET_KEY=${{ secrets.SECRET_KEY }}
+          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }} 
+        script: |
+          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker pull asisserver/synapse-backend:${{ github.sha }}
+          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker stop synapse-backend || true
+          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker rm synapse-backend || true
+          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker run -d --name synapse-backend -p 3001:3001 --restart always \
+          asisserver/synapse-backend:${{ github.sha }}
+          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker pull asisserver/synapse-web:${{ github.sha }}
+          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker stop synapse-web || true
+          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker rm synapse-web || true
+          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker run -d --name synapse-web -p 3001:3001 --restart always \
+          asisserver/synapse-web:${{ github.sha }}
