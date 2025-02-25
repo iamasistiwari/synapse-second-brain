@@ -7,7 +7,8 @@
     "start": "turbo run start",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "start-web": "cd apps/web && pnpm run start"
+    "start-web": "cd apps/web && pnpm run start",
+    "start-backend": "cd apps/http-backend && pnpm run start"
   },
   "devDependencies": {
     "prettier": "^3.4.2",

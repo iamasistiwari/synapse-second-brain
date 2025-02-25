@@ -39,7 +39,7 @@ jobs:
     #     context: .
     #     file: ./docker/Dockerfile.web
     #     push: true
-    #     tags: asisserver/synapse-web:${{ github.sha }}
+    #     tags: asisserver/synapse-web:latest
     #     build-args: |
     #       SUPABASE_URL=${{ secrets.SUPABASE_URL }}
     #       SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
@@ -57,13 +57,14 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
         script: |
-          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker pull asisserver/synapse-backend:latest
-          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker pull asisserver/synapse-web:latest
-
           echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker stop synapse-backend || true
           echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker rm synapse-backend || true
           echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker stop synapse-web || true
           echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker rm synapse-web || true
+          
+          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker pull asisserver/synapse-backend:latest
+          # echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker pull asisserver/synapse-web:latest
+
 
           echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker run -d --name synapse-backend \
             -e NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} \
