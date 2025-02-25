@@ -24,7 +24,7 @@ jobs:
         context: .
         file: ./docker/Dockerfile.backend
         push: true
-        tags: asisserver/synapse-backend:${{ github.sha }}
+        tags: asisserver/synapse-backend:latest
         build-args: |
           SUPABASE_URL=${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
@@ -33,21 +33,21 @@ jobs:
           SECRET_KEY=${{ secrets.SECRET_KEY }}
 
 
-    - name: Build web and Push Docker image
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        file: ./docker/Dockerfile.web
-        push: true
-        tags: asisserver/synapse-web:${{ github.sha }}
-        build-args: |
-          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
-          NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
-          NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
-          SECRET_KEY=${{ secrets.SECRET_KEY }}
-          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+    # - name: Build web and Push Docker image
+    #   uses: docker/build-push-action@v2
+    #   with:
+    #     context: .
+    #     file: ./docker/Dockerfile.web
+    #     push: true
+    #     tags: asisserver/synapse-web:${{ github.sha }}
+    #     build-args: |
+    #       SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+    #       SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
+    #       NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
+    #       NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
+    #       SECRET_KEY=${{ secrets.SECRET_KEY }}
+    #       GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+    #       GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
 
     - name: Deploy to EC2
       uses: appleboy/ssh-action@master
@@ -57,8 +57,8 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
         script: |
-          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker pull asisserver/synapse-backend:${{ github.sha }}
-          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker pull asisserver/synapse-web:${{ github.sha }}
+          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker pull asisserver/synapse-backend:latest
+          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker pull asisserver/synapse-web:latest
 
           echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker stop synapse-backend || true
           echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker rm synapse-backend || true
@@ -72,18 +72,18 @@ jobs:
             -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
             -e NODE_ENV=${{ secrets.NODE_ENV }} \
             -p 3001:3001 --restart always \
-            asisserver/synapse-backend:${{ github.sha }}
+            asisserver/synapse-backend:latest
 
 
-          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker run -d --name synapse-web \
-            -e NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} \
-            -e SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
-            -e SUPABASE_KEY=${{ secrets.SUPABASE_KEY }} \
-            -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
-            -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
-            -e GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
-            -e NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }} \
-            -p 3000:3000 --restart always \
-            asisserver/synapse-web:${{ github.sha }}
+          # echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker run -d --name synapse-web \
+          #   -e NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} \
+          #   -e SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+          #   -e SUPABASE_KEY=${{ secrets.SUPABASE_KEY }} \
+          #   -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
+          #   -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
+          #   -e GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
+          #   -e NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }} \
+          #   -p 3000:3000 --restart always \
+          #   asisserver/synapse-web:latest
 
           echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker image prune -f
