@@ -75,15 +75,15 @@ jobs:
             asisserver/synapse-backend:latest
 
 
-          # echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker run -d --name synapse-web \
-          #   -e NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} \
-          #   -e SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
-          #   -e SUPABASE_KEY=${{ secrets.SUPABASE_KEY }} \
-          #   -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
-          #   -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
-          #   -e GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
-          #   -e NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }} \
-          #   -p 3000:3000 --restart always \
-          #   asisserver/synapse-web:latest
+          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker run -d --name synapse-web \
+            -e NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} \
+            -e SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+            -e SUPABASE_KEY=${{ secrets.SUPABASE_KEY }} \
+            -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
+            -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
+            -e GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
+            -e NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }} \
+            -p 3000:3000 --restart always \
+            asisserver/synapse-web:latest
 
           echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker image prune -f
