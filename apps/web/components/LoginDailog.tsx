@@ -52,7 +52,7 @@ export default function LoginDailog() {
                     isLoading={loading}
                     type="button"
                     Icon={GoogleIcon}
-                    className="font-semibold xl:min-w-96"
+                    className="font-semibold xl:min-w-96 bg-white text-black"
                     onClick={() => {
                       loginWithGoogle();
                     }}
