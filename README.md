@@ -1,5 +1,4 @@
 # Synapse- Second brain 
-
 [Website-Link](https://synapse.ashishtiwari.net/)
 
 This project is a full-stack application built using **Turborepo** that allows users to create and manage notes. It features a **novel editor** to add notes, auto-fetches metadata from links, stores content in **Supabase PostgreSQL**, and supports **embeddings search** through the content.
