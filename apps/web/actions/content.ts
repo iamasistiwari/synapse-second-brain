@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use server';
 import getAPI from '@/lib/api';
 import { authOptions } from '@/lib/auth';
@@ -260,5 +261,33 @@ export async function askContent({
       message: '',
       error: 'Something went wrong',
     };
+  }
+}
+
+export async function deleteContent({
+  contentId,
+  userId,
+}: {
+  userId: string;
+  contentId: string;
+}): Promise<boolean> {
+  try {
+    const res = await fetch(`${API_URL}/api/v1/content/delete`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: (await cookies()).toString(),
+      },
+      credentials: 'include',
+      body: JSON.stringify({ userId, contentId }),
+    });
+    revalidate();
+    if (!res.ok) {
+      return false
+    }
+    revalidate();
+    return true
+  } catch (error) {
+    return false
   }
 }

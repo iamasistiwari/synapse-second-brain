@@ -88,16 +88,15 @@ export default function Sidebar() {
   const session = useSession();
   const pathname = usePathname();
   return (
-    <div className="h-full border-r border-custom">
-
-      <div className="hidden min-w-[250px] px-4 py-5 xl:flex flex-col justify-between min-h-full">
+    <div className="border-custom z-10 h-full border-r">
+      <div className="hidden min-h-full min-w-[250px] flex-col justify-between px-4 py-5 xl:flex">
         <div>
           <div className="border-custom flex items-center space-x-2 border-b py-4">
             <Brain className="text-custom h-8 w-8" />
             <span className="text-xl font-semibold">Synapse</span>
           </div>
 
-          <div className="scrollbar-w-2 scrollbar-track-blue-lighter scrollbar-thumb-blue scrollbar-thumb-rounded flex h-[70vh] flex-col space-y-5 overflow-y-auto  px-4 pt-10">
+          <div className="scrollbar-w-2 scrollbar-track-blue-lighter scrollbar-thumb-blue scrollbar-thumb-rounded flex h-[70vh] flex-col space-y-5 overflow-y-auto px-4 pt-10">
             {SiderBarOptions.map((option, index) => (
               <Link
                 href={option.href}
@@ -111,7 +110,7 @@ export default function Sidebar() {
           </div>
         </div>
 
-        <div className="flex justify-center items-center space-x-2 px-4 pt-6 mb-10 border-t border-custom">
+        <div className="border-custom mb-10 flex items-center justify-center space-x-2 border-t px-4 pt-6">
           <Image
             src={session.data?.user.image || 'https://github.com/shadcn.png'}
             alt="image"
@@ -125,7 +124,7 @@ export default function Sidebar() {
       </div>
 
       {/* Mobile sidebar */}
-      <div className="border-custom absolute bottom-[7px] flex h-[60px] w-full justify-between rounded-2xl rounded-tr-2xl border border-t bg-neutral-100 px-3 shadow-2xl backdrop-blur-3xl dark:bg-[#2c3143] xl:hidden">
+      <div className="border-custom fixed bottom-0 flex h-[60px] w-full justify-between rounded-2xl rounded-tr-2xl border border-t bg-neutral-100 px-3 shadow-2xl backdrop-blur-3xl dark:bg-[#2c3143] xl:hidden">
         {MobileOptions.map((option, index) => (
           <div key={index} className="flex">
             {index === 3 ? (

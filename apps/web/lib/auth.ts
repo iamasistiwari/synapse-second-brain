@@ -3,6 +3,10 @@ import jwt from 'jsonwebtoken';
 import { NextAuthOptions } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 import GoogleProvider from 'next-auth/providers/google';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { Credentials } from '@/types/next-auth';
+import bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 
 function getGoogleCredentials() {
   const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -25,8 +29,74 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/',
     signOut: '/dashboard',
+    error: "/"
   },
   providers: [
+    CredentialsProvider({
+      type: 'credentials',
+      name: 'Credentials',
+      credentials: {
+        email: {
+          label: 'Email',
+          type: 'text',
+          placeholder: 'john@example.com',
+        },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials: Credentials | undefined) {
+        if (!credentials) {
+          throw new Error('Provide Credentials');
+        }
+        const { email, password } = credentials;
+        if (!email || !password) {
+          throw new Error('Provide Login Credentials');
+        }
+
+        const hashedPassword = await bcrypt.hash(credentials.password, 10);
+        const { data } = await supabase
+          .from('User')
+          .select('*')
+          .eq('email', email)
+          .single();
+
+        if (data) {
+          const passwordValidation = await bcrypt.compare(
+            password,
+            data.password
+          );
+          if (!passwordValidation) {
+            throw new Error('Incorrect Password');
+          }
+          return {
+            id: data.id.toString(),
+            name: data.name,
+            email: data.email,
+          };
+        }
+
+        const id = uuidv4();
+        const name = email.split('@')[0];
+        const { data: createdUser } = await supabase
+          .from('User')
+          .insert([
+            {
+              id,
+              name,
+              email,
+              password: hashedPassword,
+            },
+          ])
+          .select();
+        if (createdUser) {
+          return {
+            id: createdUser[0].id.toString(),
+            name: createdUser[0].name,
+            email: createdUser[0].email,
+          };
+        }
+        throw new Error('Cannot able to create user');
+      },
+    }),
     GoogleProvider({
       clientId: getGoogleCredentials().clientId,
       clientSecret: getGoogleCredentials().clientSecret,

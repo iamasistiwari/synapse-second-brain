@@ -14,3 +14,9 @@ declare module 'next-auth' {
     };
   }
 }
+
+interface Credentials {
+  name?: string;
+  email: string;
+  password: string;
+}

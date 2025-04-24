@@ -14,9 +14,9 @@ export default async function page() {
         <DashboardNav title="Dashboard" />
       </div>
 
-      <div className="scrollbar-w-2 scrollbar-track-blue-lighter scrollbar-thumb-blue scrollbar-thumb-rounded mt-4 grid max-h-[73vh] w-full grid-cols-2 gap-4 overflow-y-auto scroll-smooth px-4 xl:max-h-[85vh] xl:grid-cols-3 xl:px-8">
-        {contents.map((content, index) => (
-          <ContentCard key={index} content={content} />
+      <div className="pb-10 scrollbar-w-2 scrollbar-track-blue-lighter scrollbar-thumb-blue scrollbar-thumb-rounded mt-4 grid h-[85dvh] w-full grid-cols-1 gap-4 overflow-y-auto scroll-smooth px-4 xl:max-h-[85vh] xl:grid-cols-3 xl:px-8">
+        {contents.map((content) => (
+          <ContentCard key={content.id} content={content} />
         ))}
       </div>
     </div>

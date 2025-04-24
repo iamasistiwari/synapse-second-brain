@@ -3,6 +3,7 @@ import { CameraOff, Forward } from 'lucide-react';
 import Markdown from 'markdown-to-jsx';
 import Image from 'next/image';
 import Link from 'next/link';
+import DeleteContent from './DeleteContent';
 
 export interface UseLinkType {
   lang: string;
@@ -280,39 +281,13 @@ export default function ContentCard({ content }: { content: ReceivedContent }) {
             ))}
           </div>
 
-          <div className="hidden w-40 items-center justify-center rounded-lg bg-neutral-200 py-0.5 text-sm text-neutral-800 dark:bg-neutral-800 dark:text-white xl:flex">
-            Added on
-            <span className="pl-1 text-sm tracking-tight">
-              {new Intl.DateTimeFormat('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-              }).format(new Date(content.createdAt))}
-            </span>
-          </div>
-
-          <div className="flex items-center justify-center rounded-lg bg-neutral-200 px-1 text-sm text-neutral-800 dark:bg-neutral-800 dark:text-white xl:hidden">
-            <span className="text-[9px] tracking-tighter">
-              {new Intl.DateTimeFormat('en-US', {
-                year: '2-digit',
-                month: '2-digit',
-                day: '2-digit',
-              }).format(new Date(content.createdAt))}
-            </span>
-          </div>
+          <DeleteContent content={content}/>
+          
         </div>
       </div>
     );
   }
   const linkData = JSON.parse(content.description) as unknown as UseLinkType;
-  const smAuthorName =
-    linkData.author !== null
-      ? linkData.author.substring(
-          0,
-          linkData.author.length - linkData.author.length / 1.9
-        ) + '..'
-      : null;
-  const smAuthorTitle = linkData.title.substring(0, 22);
   return (
     <Link
       href={`/content/${content.title.replace(/\s/g, '')}--${content.id}`}
@@ -322,7 +297,7 @@ export default function ContentCard({ content }: { content: ReceivedContent }) {
         <div className="flex flex-row justify-between pt-2">
           <div className="text-[11px] tracking-tight text-neutral-900 dark:text-neutral-300 xl:text-[15px]">
             <span className="hidden xl:block">{linkData.author}</span>
-            <span className="block xl:hidden">{smAuthorName}</span>
+            <span className="block xl:hidden">{linkData.author}</span>
           </div>
           <div className="flex items-center justify-center">
             <div className="mr-2 hidden text-xs leading-3 tracking-tighter text-neutral-900 dark:text-neutral-300 xl:block">
@@ -342,7 +317,7 @@ export default function ContentCard({ content }: { content: ReceivedContent }) {
           </div>
         </div>
 
-        <div className="border-custom relative h-24 w-full rounded-lg border xl:h-48">
+        <div className="border-custom relative h-44 w-full rounded-lg border xl:h-48">
           {linkData.image === null ? (
             <div className="flex h-full items-center justify-center text-xs opacity-55 xl:text-base">
               <CameraOff className="pr-2" />
@@ -357,22 +332,20 @@ export default function ContentCard({ content }: { content: ReceivedContent }) {
             />
           )}
         </div>
-        <div className="text-[13px] font-semibold xl:text-[16px]">
-          {content.title}
-        </div>
+        <div className="text-[16px] font-semibold">{content.title}</div>
 
         {/* link title */}
         {content.type !== 'Tweet' ? (
           <>
-            <div className="hidden text-[15px] text-neutral-900 dark:text-neutral-300 xl:block">
+            <div className="text-xs text-neutral-900 dark:text-neutral-300 lg:text-[15px]">
               {linkData.title}
             </div>
-            <div
+            {/* <div
               suppressHydrationWarning
               className="block text-[10px] text-neutral-900 dark:text-neutral-300 xl:hidden"
             >
               {smAuthorTitle}
-            </div>
+            </div> */}
           </>
         ) : null}
 
@@ -408,26 +381,7 @@ export default function ContentCard({ content }: { content: ReceivedContent }) {
           ))}
         </div>
 
-        <div className="hidden w-40 items-center justify-center rounded-lg bg-neutral-200 py-0.5 text-sm text-neutral-800 dark:bg-neutral-800 dark:text-white xl:flex">
-          Added on
-          <span className="pl-1 text-sm tracking-tight">
-            {new Intl.DateTimeFormat('en-US', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-            }).format(new Date(content.createdAt))}
-          </span>
-        </div>
-
-        <div className="flex items-center justify-center rounded-lg bg-neutral-200 px-1 text-sm text-neutral-800 dark:bg-neutral-800 dark:text-white xl:hidden">
-          <span className="text-[9px] tracking-tighter">
-            {new Intl.DateTimeFormat('en-US', {
-              year: '2-digit',
-              month: '2-digit',
-              day: '2-digit',
-            }).format(new Date(content.createdAt))}
-          </span>
-        </div>
+        <DeleteContent content={content} />
       </div>
     </Link>
   );

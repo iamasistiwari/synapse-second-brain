@@ -11,7 +11,6 @@ import axios from "axios";
 import { GetHash } from "./helpers/validation";
 import fetchMeta from "./helpers/metadata";
 import splitChunks from "./helpers/splitchunks";
-import Keyv from "keyv";
 import { stripMarkdownToSingleLine } from "./helpers/noteparsed";
 
 interface EmbeddingsResponse {
@@ -93,7 +92,7 @@ contentRouter.post("/add", async (req: Request, res: Response) => {
             `https://embeddings-server.ashishtiwari.net?token=${token}`,
             {
               data,
-            },
+            }
           );
           const embeddings = embeddingsResponse.data as EmbeddingsResponse;
           const section = {
@@ -166,10 +165,10 @@ contentRouter.post("/add", async (req: Request, res: Response) => {
           if (error) throw new Error("Error while uploading tags");
         }
         const trimedDescription = stripMarkdownToSingleLine(
-          validation.data.description,
+          validation.data.description
         );
         const chunks = splitChunks(
-          `${validation.data.title} ${trimedDescription}`,
+          `${validation.data.title} ${trimedDescription}`
         );
         for (let i = 0; i < chunks.length; i++) {
           const data = {
@@ -180,7 +179,7 @@ contentRouter.post("/add", async (req: Request, res: Response) => {
             `https://embeddings-server.ashishtiwari.net?token=${token}`,
             {
               data,
-            },
+            }
           );
           const embeddings = embeddingsResponse.data as EmbeddingsResponse;
           const section = {
@@ -247,7 +246,7 @@ contentRouter.post("/ask", async (req: Request, res: Response) => {
       `https://embeddings-server.ashishtiwari.net?token=${token}`,
       {
         data,
-      },
+      }
     );
     const embeddings = embeddingsResponse.data as EmbeddingsResponse;
     const queryEmbeddingVector = `[${embeddings.embeddings.join(",")}]`;
@@ -258,7 +257,7 @@ contentRouter.post("/ask", async (req: Request, res: Response) => {
         match_threshold: 0.1,
         match_int: 10,
         userid: req.userId,
-      },
+      }
     );
 
     if (MatchError) throw new Error("Failed with query embeddings");
@@ -288,11 +287,34 @@ contentRouter.get("/get/all", async (req: Request, res: Response) => {
 
     if (ContentError) throw new Error("Error while fetching");
     const filteredContents = Contents.map(
-      ({ userId, ...rest }) => rest,
+      ({ userId, ...rest }) => rest
     ) as unknown as ReceivedContent[];
 
     res.status(200).json({
       content: filteredContents,
+    });
+    return;
+  } catch (error) {
+    error instanceof Error ? error.message : "Something went wrong";
+    res.status(400).json({
+      error,
+    });
+    return;
+  }
+});
+
+contentRouter.post("/delete", async (req: Request, res: Response) => {
+  const { userId, contentId } = req.body;
+  try {
+    const { data, error } = await supabase
+      .from("Content")
+      .delete()
+      .match({ id: contentId, userId: userId });
+
+    if (error) throw new Error("Error while deleting");
+
+    res.status(200).json({
+      message: "OK Deleted",
     });
     return;
   } catch (error) {
@@ -315,7 +337,7 @@ contentRouter.get("/get/tweets", async (req: Request, res: Response) => {
 
     if (ContentError) throw new Error("Error while fetching");
     const filteredContents = Contents.map(
-      ({ userId, ...rest }) => rest,
+      ({ userId, ...rest }) => rest
     ) as unknown as ReceivedContent;
     res.status(200).json({
       content: filteredContents,
@@ -341,7 +363,7 @@ contentRouter.get("/get/links", async (req: Request, res: Response) => {
 
     if (ContentError) throw new Error("Error while fetching");
     const filteredContents = Contents.map(
-      ({ userId, ...rest }) => rest,
+      ({ userId, ...rest }) => rest
     ) as unknown as ReceivedContent;
     res.status(200).json({
       content: filteredContents,
@@ -367,7 +389,7 @@ contentRouter.get("/get/notes", async (req: Request, res: Response) => {
 
     if (ContentError) throw new Error("Error while fetching");
     const filteredContents = Contents.map(
-      ({ userId, ...rest }) => rest,
+      ({ userId, ...rest }) => rest
     ) as unknown as ReceivedContent;
     res.status(200).json({
       content: filteredContents,
@@ -409,7 +431,7 @@ contentRouter.get("/get/content/:url", async (req: Request, res: Response) => {
 
     if (ContentError) throw new Error("Error while fetching");
     const filteredContents = Contents.map(
-      ({ userId, ...rest }) => rest,
+      ({ userId, ...rest }) => rest
     ) as unknown as ReceivedContent[];
     res.status(200).json({
       content: filteredContents,

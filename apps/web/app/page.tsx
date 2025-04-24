@@ -31,7 +31,7 @@ export default function Page() {
               Twitter
             </Link>
           </div>
-          <div>
+          <div className=''>
             <LoginDailog />
           </div>
         </div>

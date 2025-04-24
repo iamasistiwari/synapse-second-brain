@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { FormEvent, useState } from 'react';
 
 import {
   Dialog,
@@ -11,9 +11,55 @@ import {
 import Button from './ui/Button';
 import { signIn } from 'next-auth/react';
 import toast from 'react-hot-toast';
+import z from 'zod';
+import { useRouter } from 'next/navigation';
+import { LogIn } from 'lucide-react';
 
 export default function LoginDailog() {
   const [loading, setLoading] = useState<boolean>(false);
+  const [fLoading, setFLoading] = useState<boolean>(false);
+  const [input, setInput] = useState({
+    password: '',
+    email: '',
+  });
+  const navigate = useRouter();
+
+  const isValidEmail = /\S+@\S+\.\S+/.test(input.email);
+  const showEmailError = input.email.length > 0 && !isValidEmail;
+
+  const loginWithCredentials = async (e: FormEvent) => {
+    e.preventDefault();
+    try {
+      setFLoading(true);
+      const zodValdation = z
+        .object({
+          email: z.string().email(),
+          password: z.string().min(8),
+        })
+        .safeParse(input);
+      if (!zodValdation.success) {
+        return;
+      }
+
+      const res = await signIn('credentials', {
+        email: input.email,
+        password: input.password,
+        redirect: false,
+      });
+      if (res?.ok) {
+        navigate.push('/dashboard');
+        navigate.refresh();
+      }
+      if (!res?.ok && res) {
+        toast.error(res.error, { duration: 1000 });
+      }
+    } catch (e) {
+      console.log('eror is ', e);
+      toast.error('something went wrong');
+    } finally {
+      setFLoading(false);
+    }
+  };
 
   const loginWithGoogle = async () => {
     setLoading(true);
@@ -37,25 +83,68 @@ export default function LoginDailog() {
             Start now
           </button>
         </DialogTrigger>
-        <DialogContent className="rounded-2xl border border-neutral-700 px-10 py-5 focus:outline-none ring-2 ring-violet-600 ">
+        <DialogContent className="min-h-[60vh] rounded-2xl border border-neutral-700 px-10 py-5 ring-2 ring-violet-600 focus:outline-none">
           <DialogHeader>
             <DialogTitle
               asChild
               className="focus:boder-0 focus:outline-none focus:ring-0"
             >
               <div className="flex h-full w-full flex-col items-center justify-center">
-                <div className="flex flex-col">
-                  <h1 className="mb-5 justify-center text-center text-lg font-medium lg:text-xl xl:w-96">
-                    Sign in to your account
-                  </h1>
+                <div className="flex flex-col space-y-10">
+                  <form
+                    onSubmit={loginWithCredentials}
+                    className="flex flex-col space-y-4 text-start"
+                  >
+                    <h1 className="mb-5 justify-center text-center text-lg font-medium lg:text-xl xl:w-96">
+                      Signup in to your account
+                    </h1>
+                    <div className="flex flex-col space-y-1 lg:space-y-2">
+                      <label>Enter email</label>
+                      <input
+                        className="rounded-xl bg-transparent"
+                        onChange={(e) =>
+                          setInput({ ...input, email: e.target.value })
+                        }
+                        placeholder="john@gmail.com"
+                      ></input>
+                      {showEmailError && (
+                        <p className="text-sm text-red-400">
+                          Please enter a valid email address
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex flex-col space-y-1 lg:space-y-2">
+                      <label>Enter password</label>
+                      <input
+                        className="rounded-xl bg-transparent"
+                        type="password"
+                        onChange={(e) =>
+                          setInput({ ...input, password: e.target.value })
+                        }
+                        placeholder="john@gmail.com"
+                      ></input>
+                      {input.password.length > 0 &&
+                        input.password.length < 8 && (
+                          <p className="text-sm text-red-400">
+                            Invalid password length
+                          </p>
+                        )}
+                    </div>
+                    <Button
+                      isLoading={fLoading}
+                      type="submit"
+                      Icon={LogIn}
+                      onClick={loginWithCredentials}
+                    >
+                      Signup
+                    </Button>
+                  </form>
                   <Button
                     isLoading={loading}
                     type="button"
                     Icon={GoogleIcon}
-                    className="font-semibold xl:min-w-96 bg-white text-black"
-                    onClick={() => {
-                      loginWithGoogle();
-                    }}
+                    className="bg-white font-semibold text-black xl:min-w-96"
+                    onClick={loginWithGoogle}
                   >
                     Google
                   </Button>
